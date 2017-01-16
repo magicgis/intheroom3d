@@ -1,0 +1,48 @@
+doctype html
+html(lang="en/us")  
+    head
+        title Component - Scene 
+        link(href='../../../style-min.css', rel='stylesheet',type="text/css")
+        link(href='style.css', rel='stylesheet',type="text/css")
+    body(class="_body")
+        main
+            h1  Who is in the room 3D - room
+            div(id='room')
+            script(src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js')
+            script(src='https://code.jquery.com/jquery-2.2.4.min.js')
+            script(src='script.js')
+            script(src='../../../scripts-min.js')
+            script.
+                window.addEventListener('load', init, false);
+
+                function init() {
+                    createScene();
+                    createLights();
+
+                    room = new Room();
+                    scene.add( room.mesh );
+
+                    desk_1 = new Desk();
+                    scene.add( desk_1.mesh );
+
+                    renderer.render(scene, camera);
+
+                    controls = new THREE.OrbitControls(camera, renderer.domElement);
+                    //controls.target = new THREE.Vector3(0,60,0);
+                    controls.minPolarAngle = -Math.PI*.45; 
+                    controls.maxPolarAngle = Math.PI*.45;
+                    controls.minDistance = 500;
+                    controls.maxDistance = 1000;
+                    controls.enabled = true;
+                    controls.enableZoom  = true;
+                    controls.enablePan  = true;
+                    
+
+                    if (controls && controls.enabled) controls.update();
+                    controls.addEventListener( 'change', function() { renderer.render(scene, camera); } );
+                    
+
+                }
+            
+            
+            

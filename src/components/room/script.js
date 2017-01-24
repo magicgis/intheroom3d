@@ -1,4 +1,5 @@
-var scene, camera, fieldOfView, aspectRatio, nearPlane, farPlane, HEIGHT, WIDTH, renderer, container;
+var scene, camera, fieldOfView, aspectRatio, nearPlane, farPlane, HEIGHT, WIDTH, renderer, container, shadowLight;
+var objectsInScene = [];
 
 function createScene() {
 	console.log("Create Scene")
@@ -14,12 +15,12 @@ function createScene() {
 
 	// Add a fog effect to the scene; same color as the
 	// background color used in the style sheet
-	scene.fog = new THREE.Fog(0xf7d9aa, 500, 2000);
+	scene.fog = new THREE.Fog(Colors.backgroundColor, 500, 2000);
 
 	// Create the camera
 	aspectRatio = WIDTH / HEIGHT;
 	fieldOfView = 45;
-	nearPlane = 0.1;
+	nearPlane = 1;
 	farPlane = 10000;
 	camera = new THREE.PerspectiveCamera(
 		fieldOfView,
@@ -29,9 +30,9 @@ function createScene() {
 	);
 
 	// Set the position of the camera
-	camera.position.x = 0;
-	camera.position.z = 750;
-	camera.position.y = 550;
+	camera.position.x = -500;
+	camera.position.z = 500;
+	camera.position.y = 300;
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 
 	//HELPER
@@ -63,6 +64,8 @@ function createScene() {
 	// Listen to the screen: if the user resizes it
 	// we have to update the camera and the renderer size
 	window.addEventListener('resize', handleWindowResize, false);
+
+
 }
 
 function handleWindowResize() {
@@ -74,6 +77,10 @@ function handleWindowResize() {
 	camera.updateProjectionMatrix();
 }
 
+function render() {
+	shadowLight.position.copy(camera.position);
+	renderer.render(scene, camera);
+}
 
 function createLights() {
 	// A hemisphere light is a gradient colored light; 
@@ -83,11 +90,11 @@ function createLights() {
 
 	// A directional light shines from a specific direction. 
 	// It acts like the sun, that means that all the rays produced are parallel. 
-	var shadowLight = new THREE.DirectionalLight(0xffffff, .9);
+	shadowLight = new THREE.DirectionalLight(0xffffff, .9);
 
 	// Set the direction of the light  
 	shadowLight.position.set(150, 350, 350);
-
+	shadowLight.position.copy(camera.position);
 	// Allow shadow casting 
 	shadowLight.castShadow = true;
 
@@ -109,17 +116,20 @@ function createLights() {
 	scene.add(shadowLight);
 
 
+
 	//var helper = new THREE.HemisphereLightHelper( hemisphereLight, 5 );
 	//scene.add( helper );
 }
 
 
 var Room = function (width = 300, height = 500) {
+	this.width = width;
+	this.height = height;
 	this.mesh = new THREE.Object3D();
 	this.mesh.castShadow = true;
 	this.mesh.receiveShadow = true;
 
-	var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(width, height), new THREE.MeshPhongMaterial({color: Colors.primaryColor }));
+	var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(width, height), new THREE.MeshPhongMaterial({ color: Colors.primaryColor }));
 	plane.material.side = THREE.DoubleSide;
 
 	plane.receiveShadow = true;
@@ -127,41 +137,206 @@ var Room = function (width = 300, height = 500) {
 
 
 	var geo = new THREE.EdgesGeometry(new THREE.PlaneBufferGeometry(width, height)); // or WireframeGeometry( geometry )
-	var mat = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
+	var mat = new THREE.LineBasicMaterial({ color: Colors.strokeColor, linewidth: Settings.strokeWidth });
 
 	var wireframe = new THREE.LineSegments(geo, mat);
+
+
 	this.mesh.rotation.x = Math.PI / 2;
 
 	this.mesh.add(wireframe);
+
+
 	var geo = new THREE.EdgesGeometry(new THREE.PlaneBufferGeometry(width + 10, height + 10)); // or WireframeGeometry( geometry )
-	var mat = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
+	var mat = new THREE.LineBasicMaterial({ color: Colors.strokeColor, linewidth: Settings.strokeWidth });
 
 	var wireframe = new THREE.LineSegments(geo, mat);
+	this.mesh.add(wireframe);
 
 
 	this.mesh.rotation.x = Math.PI / 2;
-	this.mesh.add(wireframe);
+
 
 }
 
-var Desk = function (width = 30, depth = 20, height = 15) {
+var Desk = function (args) {
+
 	this.mesh = new THREE.Object3D();
 	this.mesh.castShadow = true;
 	this.mesh.receiveShadow = true;
 
-	var geomDesk = new THREE.BoxGeometry(width,height, depth , 1, 1, 1);
+	var geomDesk = new THREE.BoxGeometry(args.width, args.height, args.depth, 1, 1, 1);
 	var matDesk = new THREE.MeshPhongMaterial({ color: Colors.primaryColor, shading: THREE.FlatShading });
-	
-	var desk = new THREE.Mesh(geomDesk, matDesk);
-	//desk.castShadow = true;
-	//desk.receiveShadow = true;
+
+	var desk = createWiredObject({
+		object: geomDesk,
+		material: matDesk,
+		click: function () {
+			console.log("click - select desk");
+		},
+		hover: function () {
+			console.log("hover - hightlight desk");
+		}
+	})
+
 	this.mesh.add(desk);
 
-	var geoDeskWire = new THREE.EdgesGeometry(geomDesk);	
-	var matDeskWire = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
-	var wireframe = new THREE.LineSegments(geoDeskWire, matDeskWire);
-	this.mesh.add(wireframe);
-	
-	this.mesh.position.y += height / 2;
-	
+	// reposition to 0,0 of room
+	this.mesh.position.x += (room.width / 2) - (args.width / 2);
+	this.mesh.position.z -= (room.height / 2) - (args.height / 2);
+	this.mesh.position.y += args.height / 2;
+
+	// position
+	this.mesh.position.z += args.positionZ
+	this.mesh.position.x -= args.positionX
+}
+
+var Door = function (args) {
+	args = merge({
+		height: 40,
+		width: 5,
+		depth: 25,
+	}, args || {});
+
+	this.mesh = new THREE.Object3D();
+	this.mesh.castShadow = true;
+	this.mesh.receiveShadow = true;
+
+	var geomDoor = new THREE.BoxGeometry(args.width, args.height, args.depth, 1, 1, 1);
+	var matDoor = new THREE.MeshPhongMaterial({ color: Colors.primaryColor, transparent: true, opacity: 1, shading: THREE.FlatShading });
+
+	var door = createWiredObject({
+		object: geomDoor,
+		material: matDoor,
+		click: function () {
+			console.log("click - door open");
+		},
+		hover: function () {
+			console.log("hover - hightlight door");
+		}
+	})
+
+
+
+	this.mesh.add(door);
+
+	// handle
+	var geomHandle = new THREE.BoxGeometry(args.width / 10, args.height / 10, args.depth, 1, 1, 1);
+
+	//reposition to 0,0 of room
+	this.mesh.position.x += (room.width / 2) - (args.width / 2);
+	this.mesh.position.z -= (room.height / 2) - (args.height / 2);
+	this.mesh.position.y += args.height / 2;
+
+	// position
+	this.mesh.position.z += args.positionZ
+	this.mesh.position.x -= args.positionX
+}
+
+var Plant = function (args) {
+	args = merge({
+		size: 10,
+		positionX: 0,
+		positionZ: 0
+	}, args || {});
+
+	this.mesh = new THREE.Object3D();
+	this.mesh.castShadow = true;
+	this.mesh.receiveShadow = true;
+
+	// POT
+	var geomPot = new THREE.CylinderGeometry((args.size), args.size / 3, args.size, 0, 1, false);
+	var matPot = new THREE.MeshPhongMaterial({ color: Colors.primaryColor, shading: THREE.FlatShading });
+	var pot = createWiredObject({
+		object: geomPot,
+		material: matPot
+	})
+	this.mesh.add(pot);
+
+
+	// trunk
+	var trunkHeight = args.size * 2;
+	var geomTrunk = new THREE.CylinderGeometry(2, 2, trunkHeight, 0, 1, false);
+	var matTrunk = new THREE.MeshPhongMaterial({ color: Colors.primaryColor, shading: THREE.FlatShading });
+
+	var trunk = createWiredObject({
+		object: geomTrunk,
+		material: matTrunk
+	})
+	trunk.position.y += (trunkHeight / 2);
+	this.mesh.add(trunk);
+
+	// bush
+	var geomBush = new THREE.SphereGeometry((args.size * 1.5), 7, 7);
+	var matBush = new THREE.MeshPhongMaterial({ color: Colors.primaryColor, shading: THREE.FlatShading });
+	var bush = createWiredObject({
+		object: geomBush,
+		material: matBush
+	})
+	bush.position.y += (trunkHeight * 1.5);
+	this.mesh.add(bush);
+
+	//reposition to 0,0 of room
+	this.mesh.position.x += (room.width / 2) - (args.size / 2);
+	this.mesh.position.z -= (room.height / 2) - (args.size / 2);
+	this.mesh.position.y += args.size / 2;
+
+	// position
+	this.mesh.position.z += args.positionZ
+	this.mesh.position.x -= args.positionX
+
+
+}
+
+
+var createWiredObject = function (args) {
+	args = merge({
+		object: null,
+		color: Colors.strokeColor,
+		click: null,
+		hover: null,
+	}, args || {});
+	if (args.object == null) { return false; }
+
+	this.mesh = new THREE.Object3D();
+	var object = new THREE.Mesh(args.object, args.material);
+	object.castShadow = true;
+	object.receiveShadow = true;
+
+
+	var wireObject = addStrokeToObject({ object: args.object });
+
+	var scaleFactor = 0.98;
+	object.scale.set(1 * scaleFactor, 1 * scaleFactor, 1 * scaleFactor);
+
+	// add callback
+	object.click = args.click;
+	object.hover = args.hover;
+	object.add(wireObject)
+
+	this.mesh.add(object);
+
+
+	objectsInScene.push(object);
+
+	return this.mesh;
+}
+
+var addStrokeToObject = function (args) {
+	args = merge({
+		object: null,
+		color: Colors.strokeColor,
+		positionZ: 0,
+		positionX: 0,
+	}, args || {});
+	if (args.object == null) { return false; }
+
+
+	var geoObject = new THREE.EdgesGeometry(args.object);
+	var matWire = new THREE.LineBasicMaterial({ color: args.color, linewidth: Settings.strokeWidth });
+	var strokedObject = new THREE.LineSegments(geoObject, matWire);
+	//var wireFrameScaleFactor = 1.04	;
+	//strokedObject.scale.set(1 * wireFrameScaleFactor,1 * wireFrameScaleFactor,1 * wireFrameScaleFactor);
+	return strokedObject;
+
 }

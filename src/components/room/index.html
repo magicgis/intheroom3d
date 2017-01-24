@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="en/us"> 
   <head>
-    <title>Component - Scene </title>
+    <title>Room</title>
     <link href="../../../style-min.css" rel="stylesheet" type="text/css">
     <link href="style.css" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" type="image/x-icon" href="data:image/x-icon;,">
   </head>
   <body class="_body">
     <main>
-      <h1> Who is in the room 3D - room</h1>
+      <h1> Title</h1>
       <div id="room"></div>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
       <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-      <script src="script.js"></script>
       <script src="../../../scripts-min.js"></script>
+      <script src="script.js"></script>
       <script>
         window.addEventListener('load', init, false);
         
@@ -20,13 +21,104 @@
             createScene();
             createLights();
         
-            room = new Room();
+            room = new Room(300, 300);
             scene.add( room.mesh );
         
-            desk_1 = new Desk();
-            scene.add( desk_1.mesh );
+            var desk_1 = new Desk({
+                width : 30,
+                height: 15,
+                depth : 20,
+                positionZ : 50,
+                positionX : 0
+            });
+            var desk_2 = new Desk({
+                width : 30,
+                height: 15,
+                depth : 20,
+                positionZ : 50,
+                positionX : 34
+            });
+            var desk_3 = new Desk({
+                width : 30,
+                height: 15,
+                depth : 20,
+                positionZ : 75,
+                positionX : 34
+            });
+            var desk_4 = new Desk({
+                width : 30,
+                height: 15,
+                depth : 20,
+                positionZ : 75,
+                positionX : 0
+            });
+           
+            scene.add( desk_1.mesh);
+            scene.add( desk_2.mesh);
+            scene.add( desk_3.mesh);
+            scene.add( desk_4.mesh);
         
-            renderer.render(scene, camera);
+            var desk_5 = new Desk({
+                width : 30,
+                height: 15,
+                depth : 20,
+                positionZ : 200,
+                positionX : 0
+            });
+            var desk_6 = new Desk({
+                width : 30,
+                height: 15,
+                depth : 20,
+                positionZ : 200,
+                positionX : 34
+            });
+            var desk_7 = new Desk({
+                width : 30,
+                height: 15,
+                depth : 20,
+                positionZ : 225,
+                positionX : 34
+            });
+            var desk_8 = new Desk({
+                width : 30,
+                height: 15,
+                depth : 20,
+                positionZ : 225,
+                positionX : 0
+            });
+        
+        
+        
+            scene.add( desk_5.mesh);
+            scene.add( desk_6.mesh);
+            scene.add( desk_7.mesh);
+            scene.add( desk_8.mesh);
+        
+        
+            var door = new Door({
+                positionZ : 250,
+                positionX : 300,
+            })
+            
+            scene.add(door.mesh);
+        
+        
+            var plant_1 = new Plant({
+                size: 10,
+                positionX : 250,
+                positionZ : 100,
+            });
+            scene.add(plant_1.mesh);
+        
+            var plant_2 = new Plant({
+                size : 7,
+                positionX : 25,
+                positionZ : 150,
+            });
+            scene.add(plant_2.mesh);
+            
+            render();
+            //renderer.render(scene, camera);
         
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             //controls.target = new THREE.Vector3(0,60,0);
@@ -40,7 +132,9 @@
             
         
             if (controls && controls.enabled) controls.update();
-            controls.addEventListener( 'change', function() { renderer.render(scene, camera); } );
+             controls.addEventListener('change', function() { 
+                render()
+             });
             
         
         }

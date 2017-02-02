@@ -1,7 +1,7 @@
 doctype html
 html(lang="en/us")  
     head
-        title title
+        title Room
         link(href='../../../style-min.css', rel='stylesheet',type="text/css")
         link(href='style.css', rel='stylesheet',type="text/css")
         link(rel="shortcut icon", type="image/x-icon",href="data:image/x-icon;,")
@@ -10,44 +10,41 @@ html(lang="en/us")
             h1  Title
             div(id='room')
             script(src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js')
+            script(src='https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js')
             script(src='https://code.jquery.com/jquery-2.2.4.min.js')
             script(src='../../../scripts-min.js')
             script(src='script.js')
             script.
                 window.addEventListener('load', init, false);
-
-                var Colors = {
-                    primaryColor: 0xdcdcdc,
-                    secondaryColor: 0xdddddd,
-                    backgroundColor: 0xa9a9a9,
-                    strokeColor: 0x333333,
-                    accentColor: 0x499333,
-                    lightColor : 0xeeeeee,
-                };
-
+                var objectsWireFrameInScene= [];
+               
+                var tween, INTERSECTED;
+                
+                
                 function init() {
                     createScene();
                     createLights();
-
-                    floor = new Floor({
-                        height:600,
-                        positionZ : -50,
-                    });
-                    scene.add( floor.mesh );
-
-                    church = new Church_floor();
-                    scene.add( church.mesh );
-                   
                     
+                    // create church... if face in view make transparent.
+       
+                    var desk = new Desk();
+                    var desk2 = new Desk();
+                    desk2.mesh.position.x += 30
+
+
+                    scene.add(desk.mesh);
+                    scene.add(desk2.mesh);
+
+
                     render();
+                    //renderer.render(scene, camera);
 
                     controls = new THREE.OrbitControls(camera, renderer.domElement);
-                    controls.minAzimuthAngle = -Math.PI*.35; 
-                    //controls.maxAzimuthAngle = Math.PI*.35; 
+                    //controls.target = new THREE.Vector3(0,60,0);
                     controls.minPolarAngle = -Math.PI*.45; 
                     controls.maxPolarAngle = Math.PI*.45;
-                    controls.minDistance = 500;
-                    controls.maxDistance = 1000;
+                    //controls.minDistance = 500;
+                    //controls.maxDistance = 1000;
                     controls.enabled = true;
                     controls.enableZoom  = true;
                     controls.enablePan  = true;
@@ -60,6 +57,12 @@ html(lang="en/us")
                     
 
                 }
-            
+
+                function render(time) {
+                    //console.log(time)
+                    //shadowLight.position.copy(camera.position);
+                    renderer.render(scene, camera);
+                }
+                            
             
             

@@ -66,14 +66,13 @@ function onDocumentMouseOver(event) {
 var showDetails= function(id,show){
     if(id === null) return false;
     if(!data[id]) return false;
-    
+    console.log(id)
+    //history.pushState(null, null, "#"+id);
+   
     if(show){
-        $(".inner-menu").html(data[id]);
-        $(".menu").addClass("open");
+         window.open("#"+id,"_self")
     }else{
-        $(".inner-menu").html("")
-        $(".menu").removeClass("open");
-        
+       window.open("#","_self")
     }
 
 }

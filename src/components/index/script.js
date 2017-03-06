@@ -16,7 +16,8 @@ var Colors = {
 	backgroundColor: 0xa9a9a9,
 	strokeColor: 0x333333,
 	lineColor: 0x333333,
-	accentColor: 0x499333,
+	accentColor: 0x0078d7, //0x499333,
+	selectedColor : 0x89b7dc ,
 	lightColor: 0xeeeeee,
 };
 
@@ -43,12 +44,8 @@ newLink.type = 'image/x-icon';
 newLink.href = 'data:image/png;base64,' + favIcon;
 docHead.appendChild(newLink);
 
-window.addEventListener('load', init, false);
-window.addEventListener('hashchange', loadContent, false);
 
-function init() {
-	loadContent();
-}
+window.addEventListener('hashchange', loadContent, false);
 
 function loadContent() {
 	var contentId = window.location.hash.replace("#", "");
@@ -88,9 +85,10 @@ function showMenu(){
 		description +=item;
 	}
 
+	var content = data[Object.keys(data)[0]]
 
 	showData({
-		title : "menu",
+		title : content.menu_title,
 		title_size : 2,
 		description: "<ul>"+description+"</ul>"
 	});	

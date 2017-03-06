@@ -20,6 +20,9 @@ h2 {
 h1 {
   font-size: 3em; }
 
+h2 {
+  font-size: 1.7em; }
+
 p {
   margin: 0; }
 
@@ -38,11 +41,13 @@ nav#navigation {
   text-decoration: none;
   display: inline-block;
   vertical-align: bottom;
-  transition: all 0.2s ease-out;
+  transition: all 0.22s ease-out;
   overflow: hidden;
   height: 3.7em;
   padding-top: 0;
   opacity: 1; }
+  .navigation__title h2 {
+    padding-top: 1em; }
   .animating-out .navigation__title {
     height: 0;
     opacity: 0;
@@ -51,7 +56,7 @@ nav#navigation {
 .navigation__content {
   display: block;
   position: absolute;
-  transition: all 0.2s ease-out;
+  transition: all 0.22s ease-out;
   opacity: 1; }
   .animating-out .navigation__content {
     opacity: 0; }
@@ -63,7 +68,7 @@ nav#navigation {
       color: inherit;
       text-decoration: none;
       border-bottom: 1px solid transparent;
-      transition: all 0.2s ease-out; }
+      transition: all 0.22s ease-out; }
 
 .navigation__divider {
   margin: 1em 0;
@@ -71,25 +76,10 @@ nav#navigation {
   height: 0;
   border-top: 1px solid rgba(0, 0, 0, 0.4);
   border-bottom: 1px solid rgba(255, 255, 255, 0.7);
-  transition: all 0.2s ease-out;
+  transition: all 0.22s ease-out;
   opacity: 1; }
   .animating-out .navigation__divider {
     opacity: 0; }
-
-aside#menu {
-  position: absolute;
-  background: rgba(169, 169, 169, 0.9);
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.2s ease-out; }
-  aside#menu.open {
-    opacity: 1;
-    visibility: visible; }
-  aside#menu .content {
-    margin-top: 10vh;
-    margin-left: 10vw; }
 
 #room {
   position: absolute;
@@ -106,75 +96,5 @@ main {
   left: 0;
   z-index: 800; }
 
-/*
-hgroup {
-    padding: 1em;
-    padding-left:4.5em;
-    &:before{
-        content:"@";
-        position:absolute;
-        font-size:2em;
-        left:0;
-        padding-left:1em;
-        padding-top:.25em;
-    }
-    h1,
-    h2 {
-        margin: 0;
-    }
-    h1 {
-        &:first-letter{
-            padding-top:1em;
-        }
-        sup {
-            color: $colorAccent;
-            font-size: 0.5em;
-            font-weight: lighter;
-        }
-    }
-    h2 {
-        font-size: 1em;
-        font-weight: lighter;
-        padding:0.2em;
-    }
-}
-
-
-
 .mouseOnSelectableObject {
-    cursor: pointer;
-}
-
-.menu {
-    z-index:999;
-    padding: 10px;
-    box-sizing: border-box;
-    background-color:rgba(255,255,255,0);
-    border: 1px solid #333;
-    width: 50px;
-    height: 94vh;
-    min-height: 50px;
-    position: fixed;
-    top: 3vh;
-    right: 3vh;
-    transition:all 0.1s ease-in-out;
-    overflow:hidden;
-    .inner-menu {
-        width:50vw;
-        position: absolute;
-        max-height:0;
-        transition:all 0.22s ease-in-out;
-    }
-    &.open{
-        width:50vw;
-        background-color:rgba(255,255,255,1);
-        .inner-menu{
-            position: relative;
-        }
-    }
-    
-    h2 {
-        margin: 0;
-    }
-}
-*/
+  cursor: pointer; }

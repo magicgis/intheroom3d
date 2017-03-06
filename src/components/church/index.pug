@@ -3,47 +3,26 @@ html(lang="en/us")
     head
         title title
         link(href='../../../style-min.css', rel='stylesheet',type="text/css")
-        link(href='style.css', rel='stylesheet',type="text/css")
         link(rel="shortcut icon", type="image/x-icon",href="data:image/x-icon;,")
     body(class="_body")
         main
-            h1  Title
             div(id='room')
             script(src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js')
             script(src='https://code.jquery.com/jquery-2.2.4.min.js')
             script(src='../../../scripts-min.js')
-            script(src='script.js')
+            //script(src='script.js')
             script.
-                window.addEventListener('load', init, false);
-
-                var Colors = {
-                    primaryColor: 0xdcdcdc,
-                    secondaryColor: 0xdddddd,
-                    backgroundColor: 0xa9a9a9,
-                    strokeColor: 0x333333,
-                    accentColor: 0x499333,
-                    lightColor : 0xeeeeee,
-                };
+                window.addEventListener('DOMContentLoaded', init, false);
 
                 function init() {
                     createScene();
                     createLights();
+                    groundFloor = new GroundFloor();
+                    scene.add(groundFloor.mesh);
 
-                    floor = new Floor({
-                        height:600,
-                        positionZ : -50,
-                    });
-                    scene.add( floor.mesh );
-
-                    church = new Church_floor();
-                    scene.add( church.mesh );
-                   
-                    
                     render();
 
                     controls = new THREE.OrbitControls(camera, renderer.domElement);
-                    controls.minAzimuthAngle = -Math.PI*.35; 
-                    //controls.maxAzimuthAngle = Math.PI*.35; 
                     controls.minPolarAngle = -Math.PI*.45; 
                     controls.maxPolarAngle = Math.PI*.45;
                     controls.minDistance = 500;

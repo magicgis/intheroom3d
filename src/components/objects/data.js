@@ -1,6 +1,7 @@
 var data = {
     "home":{
         title :"Office Space: Wortell",
+        menu_title : "at here:",
         description: "Schipholweg 641, lijnden, the Netherlands"
     },
     "fauna__tree":{
@@ -17,3 +18,33 @@ var data = {
         description:"Middle sized meetingroom with a projecting screen and whiteboard.",
     }
 }
+
+/*
+aside(id='menu')
+                div(class='content')
+                    div(class='column')
+                        h2 Rooms
+                        ul 
+                            li Andreas
+                            li Johannes
+                            li Matteus
+                            li Paulus
+                            li Petrus
+                            li Filippus
+                            li Jakobus
+                            li Pastoor                         
+                    div(class='column')
+                        h2 People
+                        ul
+                            li Receptie
+                            li BHV
+                    div(class='column')
+                        h2 Services
+                        ul
+                            li Printer
+                            li Lunch
+                            li Keuken
+                            li Hub
+                            li Narrow Casting
+                            li BHV
+*/

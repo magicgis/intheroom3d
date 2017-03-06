@@ -10,6 +10,30 @@ var material = new THREE.MeshBasicMaterial({
 	polygonOffsetFactor: 1,
 });
 
+var matDark = new THREE.MeshBasicMaterial({
+	color: Colors.lineColor,
+	polygonOffset: true,
+	polygonOffsetUnits: 1,
+	polygonOffsetFactor: 1,
+});
+
+var matLinesInvisible = new THREE.LineBasicMaterial({
+	color: Colors.lineColor,
+	linewidth: Settings.strokeWidth,
+	transparent:true, 
+	opacity:1,
+});
+
+
+var matInvisible = new THREE.MeshBasicMaterial({
+	color: Colors.primaryColor,
+	transparent:true, 
+	opacity:0,
+	polygonOffset: true,
+	polygonOffsetUnits: -1,
+	polygonOffsetFactor: -1,
+});
+
 /*
 *	OBJECTS
 */
@@ -53,7 +77,7 @@ var Desk = function (args) {
 	table.receiveShadow = true;
 
 	table.selected = false;
-	
+	/*
 	table.click = function () {
 		this.selected = !this.selected;
 		if (this.selected) {
@@ -78,6 +102,7 @@ var Desk = function (args) {
 		wiredSibling.material.color.set(Colors.lineColor);
 		render();
 	}
+	*/
 
 	//objectsWireFrameInScene.push(tableLined);
 
@@ -88,7 +113,6 @@ var Desk = function (args) {
 	objectsInScene.push(this.mesh);
 
 }
-
 
 var Tree = function (args) {
 	args = merge({
@@ -163,3 +187,102 @@ var Tree = function (args) {
 
 }
 
+var Chair = function(args){
+	args = merge({
+		id : null,
+		size: 10,
+		material : material
+	}, args || {});
+	
+	this.mesh = new THREE.Object3D();
+
+
+	var geomChair = new THREE.Geometry();
+	var geomSit = new THREE.BoxGeometry(args.size, 2, args.size);
+	geomChair.merge(geomSit);
+	
+	var geomBack = new THREE.BoxGeometry(2, args.size * 1.5, args.size);
+	geomBack.applyMatrix(new THREE.Matrix4().makeTranslation(-(args.size/2)-1, (args.size/1.9), 0));
+	geomChair.merge(geomBack);
+	
+	var geomAxis = new THREE.BoxGeometry(2, args.size * 0.5, 2);
+	geomAxis.applyMatrix(new THREE.Matrix4().makeTranslation(0, -(args.size * 0.5)/2, 0));
+	
+	geomChair.merge(geomAxis);
+	
+	var geomFoot = new THREE.BoxGeometry(2, 2, args.size * 1);
+	geomFoot.applyMatrix(new THREE.Matrix4().makeTranslation(0, -(args.size * 0.5)-1, 0));
+	geomFoot.applyMatrix(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3( 0, 1, 0 ), 45 * ( Math.PI / 180)));
+	geomChair.merge(geomFoot);
+	
+	geomFoot.applyMatrix(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3( 0, 1, 0 ), 90 * ( Math.PI / 180)));
+	geomChair.merge(geomFoot);
+
+
+	var chair = new THREE.Mesh(geomChair, args.material.clone())
+	var geomChairLined = new THREE.EdgesGeometry(geomChair);
+	var chairLined = new THREE.LineSegments(geomChairLined, matLines.clone());
+
+	this.mesh.position.y +=args.size/2+2
+
+	this.mesh.add(chair)
+	this.mesh.add(chairLined)
+}
+
+var SpiderLamp = function(args){
+	args = merge({
+		id : null,
+		size: 14,
+		material : matDark,
+		lined : false,
+		angle : 25
+	}, args || {});
+	
+	this.mesh = new THREE.Object3D();
+
+	var geomLamp = new THREE.Geometry();
+	var geomBase = new THREE.Geometry();
+	var geomArm = new THREE.Geometry();
+	var geomLowerArm = new THREE.BoxGeometry(2, args.size, 2);
+	geomLowerArm.applyMatrix(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3( 1, 0, 0 ), args.angle * ( Math.PI / 180)));
+	geomArm.merge(geomLowerArm);
+	
+	var geomUpperArm = new THREE.BoxGeometry(2, args.size, 2);
+	geomUpperArm.applyMatrix(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3( 1, 0, 0 ), (360 - args.angle) * ( Math.PI / 180)));
+	geomUpperArm.applyMatrix(new THREE.Matrix4().makeTranslation(0, args.size-4, 0));
+	geomArm.merge(geomUpperArm);
+	
+	var geomLight = new THREE.BoxGeometry(4, 4, 4);
+	geomLight.applyMatrix(new THREE.Matrix4().makeTranslation(0, args.size, 4));
+	geomLight.applyMatrix(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3( 1, 0, 0 ), (360 - args.angle) * ( Math.PI / 180)));
+	geomArm.merge(geomLight);
+
+	//1	
+	geomArm.applyMatrix(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3( 1, 0, 0 ), 270 * ( Math.PI / 180)));
+	geomArm.applyMatrix(new THREE.Matrix4().makeTranslation(0, 3, -6));
+	geomLamp.merge(geomArm)
+	
+	//2
+	for(var i=1; i<8; i++){
+		var angle = i*45;
+		var tmp_geomArm = new THREE.Geometry();
+		tmp_geomArm = geomArm.clone();
+		tmp_geomArm.applyMatrix(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3( 0, 1, 0 ), angle * ( Math.PI / 180)));
+		geomLamp.merge(tmp_geomArm)
+	
+	}
+	var geomBase = new THREE.BoxGeometry(8, 1, 8);
+	geomLamp.merge(geomBase)
+
+	var geomCord = new THREE.BoxGeometry(2, args.size*1.5, 2);
+	geomCord.applyMatrix(new THREE.Matrix4().makeTranslation(0, (args.size*1.5)/2, 0));
+	geomLamp.merge(geomCord);
+	
+	var lamp = new THREE.Mesh(geomLamp, args.material.clone())
+	this.mesh.add(lamp)
+
+	if(args.lined === true){
+		var lampLined = new THREE.LineSegments(new THREE.EdgesGeometry(geomLamp), matLines.clone());
+		this.mesh.add(lampLined)
+	}
+}

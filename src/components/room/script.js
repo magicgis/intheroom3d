@@ -12,7 +12,7 @@ function createScene() {
 
 	// Add a fog effect to the scene; same color as the
 	// background color used in the style sheet
-	scene.fog = new THREE.Fog(Colors.backgroundColor, 500, 2000);
+	//scene.fog = new THREE.Fog(Colors.backgroundColor, 500, 2000);
 
 	// Create the camera
 	aspectRatio = WIDTH / HEIGHT;
@@ -27,22 +27,18 @@ function createScene() {
 	);
 
 	// Set the position of the camera
-	camera.position.x = -500;
+	camera.position.x = 500;
 	camera.position.z = 500;
-	camera.position.y = 300;
+	camera.position.y = 500;
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 
 	//HELPER
 	//scene.add(new THREE.CameraHelper( camera ));
-
+	scene.add(new THREE.AxisHelper( 85 ) );
+	
 	// Create the renderer
 	renderer = new THREE.WebGLRenderer({
-		// Allow transparency to show the gradient background
-		// we defined in the CSS
 		alpha: true,
-
-		// Activate the anti-aliasing; this is less performant,
-		// but, as our project is low-poly based, it should be fine :)
 		antialias: true
 	});
 
@@ -72,6 +68,7 @@ function handleWindowResize() {
 	renderer.setSize(WIDTH, HEIGHT);
 	camera.aspect = WIDTH / HEIGHT;
 	camera.updateProjectionMatrix();
+	render();
 }
 
 function createLights() {

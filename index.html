@@ -1,51 +1,52 @@
 <!DOCTYPE html>
 <html lang="en/us"> 
   <head>
-    <title>@ Wortell (beta)</title>
+    <title>Office Space</title>
     <link href="style-min.css" rel="stylesheet" type="text/css">
   </head>
   <body class="_body">
     <main>
-      <hgroup>
-        <h1> Wortell<sup>beta</sup></h1>
-        <h2>Schipholweg 641, Lijnden, The Netherlands</h2>
-      </hgroup>
       <div id="room"></div>
-      <div class="menu">
-        <div class="inner-menu"></div>
-      </div>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
-      <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-      <script src="scripts-min.js"></script>
-      <script>
-        window.addEventListener('load', init, false);
-        
-        function init() {
-        
-            createScene();
-            createLights();
-        
-            church = new Church_floor();
-            scene.add( church.mesh );
-        
-            render();    
-            
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.minPolarAngle = -Math.PI*.45; 
-            controls.maxPolarAngle = Math.PI*.45;
-            controls.minDistance = 500;
-            controls.maxDistance = 1000;
-            controls.enabled = true;
-            controls.enableZoom  = true;
-            controls.enablePan  = true;
-            
-        
-            if (controls && controls.enabled) controls.update();
-             controls.addEventListener('change', function() { 
-                render()
-             });
-        }
-      </script>
+      <nav id="navigation"><a class="navigation__title" href="#menu">
+          <h1> </h1></a>
+        <hr class="navigation__divider">
+        <div class="navigation__content"></div>
+      </nav>
     </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="scripts-min.js"></script>
+    <script>
+      window.addEventListener('load', init, false);
+      
+      function init() {
+          loadContent();
+          createScene();
+          createLights();
+      
+          //church = new Church_floor();
+          //scene.add( church.mesh );
+      
+          groundFloor = new GroundFloor();
+          scene.add(groundFloor.mesh);
+      
+          render();    
+          
+          controls = new THREE.OrbitControls(camera, renderer.domElement);
+          controls.minPolarAngle = -Math.PI*.45; 
+          controls.maxPolarAngle = Math.PI*.45;
+          controls.minDistance = 500;
+          controls.maxDistance = 1000;
+          controls.enabled = true;
+          controls.enableZoom  = true;
+          controls.enablePan  = true;
+          
+      
+          if (controls && controls.enabled) controls.update();
+              controls.addEventListener('change', function() { 
+              render()
+              });
+      }
+    </script>
   </body>
 </html>

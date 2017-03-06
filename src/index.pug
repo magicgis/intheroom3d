@@ -1,0 +1,52 @@
+doctype html
+html(lang="en/us")  
+    head
+        title Office Space
+        link(href='style-min.css', rel='stylesheet',type="text/css")
+    body(class="_body")
+        main
+            div(id='room')
+
+            nav(id='navigation')
+                a(class="navigation__title",href="#menu")
+                    h1 
+                hr(class="navigation__divider")
+                div(class='navigation__content')
+                    
+        script(src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js')
+        script(src='https://code.jquery.com/jquery-2.2.4.min.js')
+        script(src='scripts-min.js')
+        script.
+            window.addEventListener('load', init, false);
+            
+            function init() {
+                loadContent();
+                createScene();
+                createLights();
+
+                //church = new Church_floor();
+                //scene.add( church.mesh );
+
+                groundFloor = new GroundFloor();
+                scene.add(groundFloor.mesh);
+
+                render();    
+                
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.minPolarAngle = -Math.PI*.45; 
+                controls.maxPolarAngle = Math.PI*.45;
+                controls.minDistance = 500;
+                controls.maxDistance = 1000;
+                controls.enabled = true;
+                controls.enableZoom  = true;
+                controls.enablePan  = true;
+                
+
+                if (controls && controls.enabled) controls.update();
+                    controls.addEventListener('change', function() { 
+                    render()
+                    });
+            }
+        
+            
+            

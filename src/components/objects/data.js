@@ -16,6 +16,16 @@ var data = {
         title : "Petrus",
         type : "room",
         description:"Middle sized meetingroom with a projecting screen and whiteboard.",
+    },
+    "altar":{
+        title : "Altar",
+        type : "room",
+        description:"Where people eat and socialize.",
+    },
+    "meetingspace":{
+        title : "Meeting Space",
+        type : "room",
+        description:"Wher people meet and drink beer.",
     }
 }
 

@@ -266,62 +266,6 @@ function createLights() {
  * 
  */
 
-var Pilar = function (args) {
-	args = merge({
-		height: 150,
-		positionZ: 0,
-		positionX: 0,
-		color: Colors.primaryColor,
-		click: null,
-		hover: null,
-	}, args || {});
-	//this.args = args;
-
-	this.mesh = new THREE.Object3D();
-
-
-	var pilarGeom = new THREE.CylinderGeometry(5, 5, args.height, 32);
-
-	var pilarBaseHeight = 10;
-	var pilarBase = new THREE.CylinderGeometry(7.5, 10, pilarBaseHeight, 32);
-	pilarBase.applyMatrix(new THREE.Matrix4().makeTranslation(0, -((args.height / 2) - (pilarBaseHeight / 2)), 0));
-
-	pilarGeom.merge(pilarBase)
-	pilarGeom.applyMatrix(new THREE.Matrix4().makeTranslation(0, (args.height / 2), 0));
-
-	var material = new THREE.MeshPhongMaterial({ color: args.color, shading: THREE.FlatShading });
-	var pilar = new THREE.Mesh(pilarGeom, material);
-
-	pilar.castShadow = true;
-	pilar.receiveShadow = true;
-
-	//this.mesh.add(addStrokeToObject({object: pilarGeom}));
-
-	this.mesh.add(pilar);
-
-}
-
-var addTable = function (args) {
-	args = merge({
-		x: 0,
-		z: 0,
-		rotation: 0,
-		click: null,
-		over: null,
-		out: null,
-	}, args || {});
-
-
-	var desk = new Desk(args);
-	desk.mesh.position.z += args.z;
-	desk.mesh.position.x += args.x;
-	desk.mesh.rotation.y = args.rotation;
-
-	scene.add(desk.mesh);
-
-}
-
-
 var GroundFloor = function (args) {
 	args = merge({
 	}, args || {});
@@ -333,10 +277,10 @@ var GroundFloor = function (args) {
 
 	var kitchen = new Kitchen();
 	kitchen.mesh.position.x -= 50 + (75/2);
-	this.mesh.add(kitchen.mesh);
+	//this.mesh.add(kitchen.mesh);
 
 	var altar = new Altar();
-	altar.mesh.position.z += 50 + (100/2);
+	altar.mesh.position.z += 25 + (100/2);
 	this.mesh.add(altar.mesh);
 
 	
@@ -609,8 +553,37 @@ var Altar = function (args) {
 	*	PLATEAU
 	*/
 	var plateau = new THREE.Object3D();
-	var geomplateau = new THREE.BoxGeometry(args.width, args.height / 4, args.depth);
+	var geomplateau = new THREE.BoxGeometry(args.width, args.height / 4, args.depth/2);
 	geomplateau.applyMatrix(new THREE.Matrix4().makeTranslation(0, (args.height / 8), 0))
+	var plateauPlane = new THREE.Mesh(geomplateau, material.clone());
+	var geomplateauLined = new THREE.EdgesGeometry(geomplateau);
+	var plateauLined = new THREE.LineSegments(geomplateauLined, matLines.clone());
+	plateau.add(plateauPlane)
+	plateau.add(plateauLined)
+	this.mesh.add(plateau)
+
+	/*
+	* 	Ramp
+	*/
+	var ramp = new THREE.Object3D();
+	var geomramp = new THREE.BoxGeometry(args.width/ 6, args.height / 4, args.depth/2);
+	geomramp.applyMatrix(new THREE.Matrix4().makeTranslation(((args.width / 6) * 3)-(args.width/ 12), (args.height / 12), args.depth/2))
+	geomramp.vertices[0].y = 0;
+	geomramp.vertices[5 ].y = 0;
+	var rampPlane = new THREE.Mesh(geomramp, material.clone());
+	var geomrampLined = new THREE.EdgesGeometry(geomramp);
+	var rampLined = new THREE.LineSegments(geomrampLined, matLines.clone());
+	ramp.add(rampPlane)
+	ramp.add(rampLined)
+	this.mesh.add(ramp)
+
+
+	/*
+	*	LOWER PLATEAU
+	*/
+	var plateau = new THREE.Object3D();
+	var geomplateau = new THREE.BoxGeometry(args.width, 0, args.depth/2);
+	geomplateau.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, args.depth /2))
 	var plateauPlane = new THREE.Mesh(geomplateau, material.clone());
 	var geomplateauLined = new THREE.EdgesGeometry(geomplateau);
 	var plateauLined = new THREE.LineSegments(geomplateauLined, matLines.clone());
@@ -625,10 +598,15 @@ var Altar = function (args) {
 	var room = new THREE.Object3D();
 	room.selected = false;
 	
-	var geomRoom = new THREE.BoxGeometry(args.width, args.height, args.depth);
+	var geomRoom = new THREE.BoxGeometry(args.width, 40, args.depth);
+	geomRoom.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, args.depth /4))
+	
 	var roomPlane = new THREE.Mesh(geomRoom, matInvisible.clone());
 	var geomRoomLined = new THREE.EdgesGeometry(geomRoom);
 	var roomLined = new THREE.LineSegments(geomRoomLined, matLinesInvisible.clone());
+	
+	
+	
 	roomPlane.selected = false;
 	roomPlane.args = args;
 	roomPlane.click = function () {
@@ -662,22 +640,22 @@ var Altar = function (args) {
 		render();
 	}
 
+	
 
 	room.add(roomPlane)
-	//room.add(roomLined)
-	//room.position.y += (args.height)
 	objectsInScene.push(roomPlane);
-
-
 	room.position.y += args.height / 2
 	this.mesh.add(room)
+
+
 
 	/*
 	*	DECORATIONS
 	*/
 
-	var desk = new Desk({ width: 40, depth: 40, height: 10, });
-	desk.mesh.position.y += args.height / 4;
+	var desk = new Desk({ width: 150, depth: 20, height: 20, });
+	desk.mesh.position.z += args.depth / 4;
+	
 	this.mesh.add(desk.mesh);
 
 	
@@ -686,6 +664,129 @@ var Altar = function (args) {
 
 }
 
+var Meetingspace = function (args) {
+	args = merge({
+		id: "meetingspace",
+		width: 275,
+		height: 10,
+		depth: 50,
+	}, args || {});
+
+	this.mesh = new THREE.Object3D();
+
+
+	/*
+	*	PLATEAU
+	*/
+	var plateau = new THREE.Object3D();
+	var geomplateau = new THREE.BoxGeometry(args.width, args.height / 4, args.depth);
+	geomplateau.applyMatrix(new THREE.Matrix4().makeTranslation(0, (args.height / 8), 0))
+	var plateauPlane = new THREE.Mesh(geomplateau, material.clone());
+	var geomplateauLined = new THREE.EdgesGeometry(geomplateau);
+	var plateauLined = new THREE.LineSegments(geomplateauLined, matLines.clone());
+	plateau.add(plateauPlane)
+	plateau.add(plateauLined)
+	this.mesh.add(plateau)
+
+	/*
+	* 	Ramp
+	*/
+	var ramp = new THREE.Object3D();
+	var geomramp = new THREE.BoxGeometry(args.width/ 6, args.height / 4, args.depth);
+	geomramp.applyMatrix(new THREE.Matrix4().makeTranslation(((args.width / 6) * 3)-(args.width/ 12), (args.height / 12), args.depth))
+	geomramp.vertices[0].y = 0;
+	geomramp.vertices[5 ].y = 0;
+	var rampPlane = new THREE.Mesh(geomramp, material.clone());
+	var geomrampLined = new THREE.EdgesGeometry(geomramp);
+	var rampLined = new THREE.LineSegments(geomrampLined, matLines.clone());
+	ramp.add(rampPlane)
+	ramp.add(rampLined)
+	this.mesh.add(ramp)
+
+
+	/*
+	*	LOWER PLATEAU
+	*/
+	var plateau = new THREE.Object3D();
+	var geomplateau = new THREE.BoxGeometry(args.width, 0, args.depth);
+	geomplateau.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, args.depth))
+	var plateauPlane = new THREE.Mesh(geomplateau, material.clone());
+	var geomplateauLined = new THREE.EdgesGeometry(geomplateau);
+	var plateauLined = new THREE.LineSegments(geomplateauLined, matLines.clone());
+	plateau.add(plateauPlane)
+	plateau.add(plateauLined)
+	this.mesh.add(plateau)
+
+	/*
+	*	ROOM
+	*/
+
+	var room = new THREE.Object3D();
+	room.selected = false;
+	
+	var geomRoom = new THREE.BoxGeometry(args.width, args.height, args.depth);
+	var roomPlane = new THREE.Mesh(geomRoom, matInvisible.clone());
+	var geomRoomLined = new THREE.EdgesGeometry(geomRoom);
+	var roomLined = new THREE.LineSegments(geomRoomLined, matLinesInvisible.clone());
+	
+	
+	
+	roomPlane.selected = false;
+	roomPlane.args = args;
+	roomPlane.click = function () {
+		this.selected = !this.selected;
+		var color = (this.selected === true) ? Colors.selectedColor : Colors.accentColor;
+		this.parent.parent.traverse(function (child) {
+			if (child.type === 'LineSegments') {
+				child.material.color.set(Colors.accentColor);
+			}
+		});
+		render();
+
+		showDetails(this.args.id,this.selected);
+	}
+
+	roomPlane.over = function () {
+		var color = (this.selected === true) ? Colors.selectedColor : Colors.accentColor;
+		this.parent.parent.traverse(function (child) {
+			if (child.type === 'LineSegments') {
+				child.material.color.set(color);
+			}
+		});
+		render();
+	}
+	roomPlane.out = function () {
+		this.parent.parent.traverse(function (child) {
+			if (child.type === 'LineSegments') {
+				child.material.color.set(Colors.lineColor);
+			}
+		});
+		render();
+	}
+
+	
+
+	room.add(roomPlane)
+	objectsInScene.push(roomPlane);
+	room.position.y += args.height / 2
+	this.mesh.add(room)
+
+
+
+	/*
+	*	DECORATIONS
+	*/
+
+	var desk = new Desk({ width: 150, depth: 20, height: 20, });
+	desk.mesh.position.z += args.depth / 2;
+	
+	this.mesh.add(desk.mesh);
+
+	
+
+	
+
+}
 
 
 /*
